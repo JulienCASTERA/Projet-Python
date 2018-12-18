@@ -18,7 +18,6 @@ class Player:
         self.canvas = canvas
 
         self.name = name
-        self.score = 0
 
     # Movement
     def up(self, event):
@@ -32,10 +31,6 @@ class Player:
         if coords[3] >= int(self.canvas['height']):
             return 0
         self.canvas.move(self.player, 0, 20)
-
-    def addscore(self, add):
-        self.score += 1
-        print("{} : {}".format(self.name, self.score))
 
     def givePosition(self):
         return self.canvas.coords(self.player)
