@@ -20,3 +20,12 @@
         * Font rebondir la balle
     * Principe de Victoire :
         * Zone de "But dans chaque camp.
+        * Retour au menu quand Victoire.
+* **Lot 3 - Généricité :**
+    * Un écran de paramétrage
+        * Intermédiaire entre le menu principal et l’écran de jeu.
+        * Paramétrage du nombre de points gagnants.
+        * Paramétrage de la vitesse de la balle.
+    * Un écran de fin de partie
+        * Stats basiques : Points par Joueur, gagnant, temps.
+        * Rejouer ou Menu
