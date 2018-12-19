@@ -1,6 +1,7 @@
 import tkinter as tk
 from player import *
 from ball import *
+import time
 
 class Frames(tk.Tk):
     """Initialise les données liées à toutes les fenetres"""
@@ -74,9 +75,12 @@ class Jeu(tk.Frame):
         # Movement P2
         canvas.bind_all('<z>', player2.up)
         canvas.bind_all('<s>', player2.down)
+        Jeu.start_time = time.time()
+
 
         def checkpoint():  # Check point
             coords = canvas.coords(ball.ball)
+            canvas.after(34, checkpoint)
             # Collision mur
             if coords[3] < 0 or coords[1] > int(canvas['height']) - 40:
                 ball.y_speed = -ball.y_speed
@@ -85,26 +89,14 @@ class Jeu(tk.Frame):
                 coords[0], coords[1], coords[2], coords[3])
             if collision != (1,):
                 ball.x_speed = -ball.x_speed
-            # J2 Gagne 1pts
-            if coords[2] < 0:
-                if Jeu.p2s.get() < Menu.scoremax.get() - 1:
-                    Jeu.p2s.set(Jeu.p2s.get()+1)
-                    print("Joueur 2 : ", Jeu.p2s.get())
-                    ball.x_speed = -ball.x_speed
-                else:
-                    Jeu.p2s.set(Jeu.p2s.get()+1)
-                    canvas.unbind_all('<s>')
-                    canvas.unbind_all('<z>')
-                    canvas.unbind_all('<Down>')
-                    canvas.unbind_all('<Up>')
-                    master.switch_frame(EndScreen)
-
             # J1 Gagne 1 pts
             if coords[0] > int(canvas['width']):
                 if Jeu.p1s.get() < Menu.scoremax.get() - 1:
                     Jeu.p1s.set(Jeu.p1s.get()+1)
                     print("Joueur 1 : ", Jeu.p1s.get())
+                    canvas.move(ball.ball, -500, 0)
                     ball.x_speed = -ball.x_speed
+                    ball.y_speed = -ball.y_speed
                 else:
                     Jeu.p1s.set(Jeu.p1s.get()+1)
                     canvas.unbind_all('<s>')
@@ -112,8 +104,21 @@ class Jeu(tk.Frame):
                     canvas.unbind_all('<Down>')
                     canvas.unbind_all('<Up>')
                     master.switch_frame(EndScreen)
-
-            canvas.after(34, checkpoint)
+            # J2 Gagne 1pts
+            if coords[2] < 0:
+                if Jeu.p2s.get() < Menu.scoremax.get() - 1:
+                    Jeu.p2s.set(Jeu.p2s.get()+1)
+                    print("Joueur 2 : ", Jeu.p2s.get())
+                    canvas.move(ball.ball, 500, 0)
+                    ball.x_speed = -ball.x_speed
+                    ball.y_speed = -ball.y_speed
+                else:
+                    Jeu.p2s.set(Jeu.p2s.get()+1)
+                    canvas.unbind_all('<s>')
+                    canvas.unbind_all('<z>')
+                    canvas.unbind_all('<Down>')
+                    canvas.unbind_all('<Up>')
+                    master.switch_frame(EndScreen)
 
         checkpoint()
 
@@ -131,7 +136,9 @@ class EndScreen(tk.Frame):
         else:
             tk.Label(self, text="Joueur 2 gagne ! ").pack(side="top", fill="x", pady=10)
         tk.Button(self, text="Retour à l'écran principal", command=lambda: master.switch_frame(Menu)).pack()
-
+        e = time.time() - Jeu.start_time
+        tk.Label(self, text="Temps écoulé : {:.0f}:{:.0f}:{:02f}".format(e // 3600, (e % 3600 // 60), e % 60)).pack(side="top", fill="x", pady=10)
+        print('Temps écoulé : {:.0f}:{:.0f}:{:02f}'.format(e // 3600, (e % 3600 // 60), e % 60))
 
 if __name__ == "__main__":
     app = Frames()
