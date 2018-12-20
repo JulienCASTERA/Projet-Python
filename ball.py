@@ -3,7 +3,6 @@ class Ball:
         self.canvas = canvas
         canvas_height = int(canvas['height'])
         canvas_width = int(canvas['width'])
-
         self.radius = radius
         # Init pos
         self.x1 = canvas_width / 2 - self.radius / 2

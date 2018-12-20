@@ -1,7 +1,10 @@
 import tkinter as tk
 from player import *
 from ball import *
+from bonus import *
 import time
+
+bon = None
 
 class Frames(tk.Tk):
     """Initialise les données liées à toutes les fenetres"""
@@ -58,7 +61,6 @@ class Jeu(tk.Frame):
         # INIT Ball
         print("Vitesse définie sur cette partie :", Menu.v.get())
         ball = Ball(canvas, 15, int(Menu.v.get()))
-
         # INIT Player
         player = Player("Joueur 1", canvas, 20, 100, 0)
         player2 = Player("Joueur 2", canvas, 20, 100, 1)
@@ -80,15 +82,27 @@ class Jeu(tk.Frame):
 
         def checkpoint():  # Check point
             coords = canvas.coords(ball.ball)
+            cp1 = canvas.coords(player.player)
+            cp2 = canvas.coords(player2.player)
             canvas.after(34, checkpoint)
+            bonus()
             # Collision mur
             if coords[3] < 0 or coords[1] > int(canvas['height']) - 40:
                 ball.y_speed = -ball.y_speed
             # Collision joueur
             collision = canvas.find_overlapping(
                 coords[0], coords[1], coords[2], coords[3])
+            c_p1 = canvas.find_overlapping(
+                cp1[0], cp1[1], cp1[2], cp1[3])
+            c_p2 = canvas.find_overlapping(
+                cp2[0], cp2[1], cp2[2], cp2[3])
             if collision != (1,):
-                ball.x_speed = -ball.x_speed
+                if collision == c_p1 or collision == c_p2:
+                    ball.x_speed = -ball.x_speed
+                if collision == c_p1:
+                    bon.last = 'player'
+                if collision == c_p2:
+                    bon.last = 'player2'
             # J1 Gagne 1 pts
             if coords[0] > int(canvas['width']):
                 if Jeu.p1s.get() < Menu.scoremax.get() - 1:
@@ -119,8 +133,19 @@ class Jeu(tk.Frame):
                     canvas.unbind_all('<Down>')
                     canvas.unbind_all('<Up>')
                     master.switch_frame(EndScreen)
+        def bonus():
+            global bon
+            canvas.after(3000, bonus)
+            if bon == None:
+                bon = Bonus(canvas, player, player2, ball, None)
+            if bon != None:
+                test = bon.checkCol()
+                if test != None:
+                    bon = None
+           
 
         checkpoint()
+       
 
 
 class EndScreen(tk.Frame):
@@ -139,6 +164,7 @@ class EndScreen(tk.Frame):
         e = time.time() - Jeu.start_time
         tk.Label(self, text="Temps écoulé : {:.0f}:{:.0f}:{:02f}".format(e // 3600, (e % 3600 // 60), e % 60)).pack(side="top", fill="x", pady=10)
         print('Temps écoulé : {:.0f}:{:.0f}:{:02f}'.format(e // 3600, (e % 3600 // 60), e % 60))
+
 
 if __name__ == "__main__":
     app = Frames()
