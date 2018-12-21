@@ -6,6 +6,8 @@ import time
 
 bon = None
 
+
+
 class Frames(tk.Tk):
     """Initialise les données liées à toutes les fenetres"""
     def __init__(self):
@@ -53,6 +55,8 @@ class Jeu(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         # INIT Canvas
+        Jeu.last = tk.IntVar()
+        Jeu.last.set(0)
         width = 1000
         height = 500
         canvas = tk.Canvas(self, width=width, height=height, background="black")
@@ -100,9 +104,11 @@ class Jeu(tk.Frame):
                 if collision == c_p1 or collision == c_p2:
                     ball.x_speed = -ball.x_speed
                 if collision == c_p1:
-                    bon.last = 'player'
+                    Jeu.last.set(1)
+                    print(Jeu.last.get())
                 if collision == c_p2:
-                    bon.last = 'player2'
+                    Jeu.last.set(2)
+                    print(Jeu.last.get())
             # J1 Gagne 1 pts
             if coords[0] > int(canvas['width']):
                 if Jeu.p1s.get() < Menu.scoremax.get() - 1:
@@ -137,16 +143,23 @@ class Jeu(tk.Frame):
             global bon
             canvas.after(3000, bonus)
             if bon == None:
-                bon = Bonus(canvas, player, player2, ball, None)
-            if bon != None:
-                test = bon.checkCol()
-                if test != None:
-                    bon = None
+                bon = Bonus(canvas, player, player2, ball.ball)
+            if bon.checkCol(player,player2,ball.ball) != None:
+                col = bon.checkCol(player,player2,ball.ball)
+                bon = None
+                print("Couleur du bonus : ", col, "pour le joueur : ", Jeu.last.get())
+                if col == 'red' and Jeu.last.get() == 1:
+                    player.move_p1 = 60
+                    print(player.move_p1, "P1 Move")
+                if col == 'red' and Jeu.last.get() == 2:
+                    player.move_p2 = 60
+                    print(player.move_p2, "P2 Move")
+                    
+
            
 
         checkpoint()
        
-
 
 class EndScreen(tk.Frame):
     def __init__(self, master):

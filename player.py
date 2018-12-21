@@ -4,12 +4,17 @@ class Player:
         canvas_width = int(canvas['width'])
         self.tag = None
         self.move = 20
+        self.move_p1 = 0
+        self.move_p2 = 0
+
         if start <= 0:
             self.x_start = 20
             self.tag = "player"
+            self.move = self.move + self.move_p1
         else:
             self.tag = "player2"
             self.x_start = canvas_width - 40
+            self.move = self.move + self.move_p2
 
         # Init pos
         self.top = self.x_start
