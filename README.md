@@ -29,3 +29,7 @@
     * Un écran de fin de partie
         * Stats basiques : Points par Joueur, gagnant, temps.
         * Rejouer ou Menu
+* **Lot 4 - Evolution:**
+    * “Bulles” de bonus, comme dans “Curve Fever” ou encore “Sports Head Football”.
+        * Activé si la balle touche la bulle
+        * Nombre, type, couleur, temps et position des bonus aléatoires
