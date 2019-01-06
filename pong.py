@@ -4,10 +4,6 @@ from ball import *
 from bonus import *
 import time
 
-bon = None
-
-
-
 class Frames(tk.Tk):
     """Initialise les données liées à toutes les fenetres"""
     def __init__(self):
@@ -40,13 +36,13 @@ class Menu(tk.Frame):
         Menu.scoremax.set(2)
         Menu.v = tk.IntVar()
         Menu.v.set(5)
-        tk.Checkbutton(self, text="Balle lente", variable=Menu.v, onvalue="5", offvalue="0", state='active').grid(row=2)
-        tk.Checkbutton(self, text="Balle moyenne", variable=Menu.v, onvalue="7", offvalue="0").grid(row=3)
-        tk.Checkbutton(self, text="Balle rapide", variable=Menu.v, onvalue="10", offvalue="0").grid(row=4)
+        tk.Checkbutton(self, text="Balle lente", variable=Menu.v, onvalue="5", offvalue="5", state='active').grid(row=2)
+        tk.Checkbutton(self, text="Balle moyenne", variable=Menu.v, onvalue="7", offvalue="5").grid(row=3)
+        tk.Checkbutton(self, text="Balle rapide", variable=Menu.v, onvalue="10", offvalue="5").grid(row=4)
 
-        tk.Checkbutton(self, text="5", variable=self.scoremax, onvalue="5", offvalue="0", state='active').grid()
-        tk.Checkbutton(self, text="10", variable=self.scoremax, onvalue="10", offvalue="0").grid()
-        tk.Checkbutton(self, text="20", variable=self.scoremax, onvalue="20", offvalue="0").grid()
+        tk.Checkbutton(self, text="5", variable=self.scoremax, onvalue="5", offvalue="2", state='active').grid()
+        tk.Checkbutton(self, text="10", variable=self.scoremax, onvalue="10", offvalue="2").grid()
+        tk.Checkbutton(self, text="20", variable=self.scoremax, onvalue="20", offvalue="2").grid()
 
         tk.Button(self, text='Jouer', command=lambda: master.switch_frame(Jeu)).grid()
         tk.Button(self, text="Quitter", command=master.destroy).grid()
@@ -64,12 +60,17 @@ class Jeu(tk.Frame):
         canvas.grid(column=0, row=1, columnspan=4, sticky="news")
 
         # INIT Ball
-        print("Vitesse définie sur cette partie :", Menu.v.get())
+        Jeu.bon = None
         ball = Ball(canvas, 15, int(Menu.v.get()))
+
         # INIT Player
         player = Player("Joueur 1", canvas, 20, 100, 0)
         player2 = Player("Joueur 2", canvas, 20, 100, 1)
 
+
+        # INIT Messages
+        print('###############################################################')
+        print("Vitesse définie sur cette partie :", Menu.v.get())
         print("Score défini sur cette partie :", Menu.scoremax.get())
         Jeu.p1s = tk.IntVar()
         Jeu.p2s = tk.IntVar()
@@ -106,10 +107,8 @@ class Jeu(tk.Frame):
                         ball.x_speed = -ball.x_speed
                     if collision == c_p1:
                         Jeu.last.set(1)
-                        print(Jeu.last.get())
                     if collision == c_p2:
                         Jeu.last.set(2)
-                        print(Jeu.last.get())
                 # J1 Gagne 1 pts
                 if coords[0] > int(canvas['width']):
                     if Jeu.p1s.get() < Menu.scoremax.get() - 1:
@@ -124,7 +123,7 @@ class Jeu(tk.Frame):
                         player2.speed()
                     else:
                         Jeu.oui = False
-                        print('Si FALSE le jeu est coupé:', Jeu.oui)
+                        print('Game is running:', Jeu.oui)
                         Jeu.p1s.set(Jeu.p1s.get()+1)
                         canvas.unbind_all('<s>')
                         canvas.unbind_all('<z>')
@@ -147,7 +146,7 @@ class Jeu(tk.Frame):
                         player2.speed()
                     else:
                         Jeu.oui = False
-                        print('Si FALSE le jeu est coupé:', Jeu.oui)
+                        print('Game is running:', Jeu.oui)
                         Jeu.p2s.set(Jeu.p2s.get()+1)
                         canvas.unbind_all('<s>')
                         canvas.unbind_all('<z>')
@@ -157,13 +156,12 @@ class Jeu(tk.Frame):
                         canvas.after_cancel(checkpoint)
                         master.switch_frame(EndScreen)
         def bonus():
-            global bon
             canvas.after(3000, bonus)
-            if bon == None:
-                bon = Bonus(canvas, player, player2, ball.ball)
-            if bon.checkCol(player,player2,ball.ball) != None:
-                col = bon.checkCol(player,player2,ball.ball)
-                bon = None
+            if Jeu.bon == None:
+                Jeu.bon = Bonus(canvas, player, player2, ball.ball)
+            if Jeu.bon.checkCol(player,player2,ball.ball) != None:
+                col = Jeu.bon.checkCol(player,player2,ball.ball)
+                Jeu.bon = None
                 print("Couleur du bonus : ", col, "pour le joueur : ", Jeu.last.get())
                 if col == 'red' and Jeu.last.get() == 1:
                     print('P1 Move')
@@ -177,12 +175,26 @@ class Jeu(tk.Frame):
                 if col == 'blue' and Jeu.last.get() == 2:
                     print('P2 Resize')
                     player2.resize(1.2)
+                if col == 'green':
+                    print('Les deux joueurs sont resize en plus grand')
+                    player.resize(1.2)
+                    player2.resize(1.2)
+                if col == 'yellow':
+                    print('Les deux joueurs vont plus vite')
+                    player.speed(60)
+                    player2.speed(60)
+                if col =='purple':
+                    if Jeu.last.get() == 1:
+                        print('Le joueur 2 a un malus de vitesse !')
+                        player2.speed(10)
+                    else:
+                        print('Le joueur 1 a un malus de vitesse !')
+                        player.speed(10)
+
+
 
         checkpoint()
         
-
-        
-       
 
 class EndScreen(tk.Frame):
     def __init__(self, master):
@@ -200,6 +212,7 @@ class EndScreen(tk.Frame):
         e = time.time() - Jeu.start_time
         tk.Label(self, text="Temps écoulé : {:.0f}:{:.0f}:{:02f}".format(e // 3600, (e % 3600 // 60), e % 60)).pack(side="top", fill="x", pady=10)
         print('Temps écoulé : {:.0f}:{:.0f}:{:02f}'.format(e // 3600, (e % 3600 // 60), e % 60))
+        print('###############################################################')
 
 
 if __name__ == "__main__":
