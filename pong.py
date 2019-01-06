@@ -22,7 +22,8 @@ class Frames(tk.Tk):
         """Detruit la frame actuelle avant de la remplacer par la frame demandée (actuelle)."""
         new_frame = frame_class(self)
         if self._frame is not None:
-            self._frame.destroy()
+            #self._frame.destroy()
+            self._frame.grid_forget()
         self._frame = new_frame
         self._frame.rowconfigure(0, weight=1)
         self._frame.columnconfigure(0, weight=1)
@@ -82,63 +83,79 @@ class Jeu(tk.Frame):
         canvas.bind_all('<z>', player2.up)
         canvas.bind_all('<s>', player2.down)
         Jeu.start_time = time.time()
-
-
+        Jeu.oui = True
         def checkpoint():  # Check point
             coords = canvas.coords(ball.ball)
             cp1 = canvas.coords(player.player)
             cp2 = canvas.coords(player2.player)
-            canvas.after(34, checkpoint)
-            bonus()
             # Collision mur
-            if coords[3] < 0 or coords[1] > int(canvas['height']) - 40:
-                ball.y_speed = -ball.y_speed
-            # Collision joueur
-            collision = canvas.find_overlapping(
-                coords[0], coords[1], coords[2], coords[3])
-            c_p1 = canvas.find_overlapping(
-                cp1[0], cp1[1], cp1[2], cp1[3])
-            c_p2 = canvas.find_overlapping(
-                cp2[0], cp2[1], cp2[2], cp2[3])
-            if collision != (1,):
-                if collision == c_p1 or collision == c_p2:
-                    ball.x_speed = -ball.x_speed
-                if collision == c_p1:
-                    Jeu.last.set(1)
-                    print(Jeu.last.get())
-                if collision == c_p2:
-                    Jeu.last.set(2)
-                    print(Jeu.last.get())
-            # J1 Gagne 1 pts
-            if coords[0] > int(canvas['width']):
-                if Jeu.p1s.get() < Menu.scoremax.get() - 1:
-                    Jeu.p1s.set(Jeu.p1s.get()+1)
-                    print("Joueur 1 : ", Jeu.p1s.get())
-                    canvas.move(ball.ball, -500, 0)
-                    ball.x_speed = -ball.x_speed
+            if Jeu.oui == True:
+                canvas.after(34, checkpoint)
+                bonus()
+                if coords[3] < 0 or coords[1] > int(canvas['height']) - 40:
                     ball.y_speed = -ball.y_speed
-                else:
-                    Jeu.p1s.set(Jeu.p1s.get()+1)
-                    canvas.unbind_all('<s>')
-                    canvas.unbind_all('<z>')
-                    canvas.unbind_all('<Down>')
-                    canvas.unbind_all('<Up>')
-                    master.switch_frame(EndScreen)
-            # J2 Gagne 1pts
-            if coords[2] < 0:
-                if Jeu.p2s.get() < Menu.scoremax.get() - 1:
-                    Jeu.p2s.set(Jeu.p2s.get()+1)
-                    print("Joueur 2 : ", Jeu.p2s.get())
-                    canvas.move(ball.ball, 500, 0)
-                    ball.x_speed = -ball.x_speed
-                    ball.y_speed = -ball.y_speed
-                else:
-                    Jeu.p2s.set(Jeu.p2s.get()+1)
-                    canvas.unbind_all('<s>')
-                    canvas.unbind_all('<z>')
-                    canvas.unbind_all('<Down>')
-                    canvas.unbind_all('<Up>')
-                    master.switch_frame(EndScreen)
+                # Collision joueur
+                collision = canvas.find_overlapping(
+                    coords[0], coords[1], coords[2], coords[3])
+                c_p1 = canvas.find_overlapping(
+                    cp1[0], cp1[1], cp1[2], cp1[3])
+                c_p2 = canvas.find_overlapping(
+                    cp2[0], cp2[1], cp2[2], cp2[3])
+                if collision != (1,):
+                    if collision == c_p1 or collision == c_p2:
+                        ball.x_speed = -ball.x_speed
+                    if collision == c_p1:
+                        Jeu.last.set(1)
+                        print(Jeu.last.get())
+                    if collision == c_p2:
+                        Jeu.last.set(2)
+                        print(Jeu.last.get())
+                # J1 Gagne 1 pts
+                if coords[0] > int(canvas['width']):
+                    if Jeu.p1s.get() < Menu.scoremax.get() - 1:
+                        Jeu.p1s.set(Jeu.p1s.get()+1)
+                        print("Joueur 1 : ", Jeu.p1s.get())
+                        canvas.move(ball.ball, -500, 0)
+                        ball.x_speed = -ball.x_speed
+                        ball.y_speed = -ball.y_speed
+                        player.resize(0)
+                        player2.resize(0)
+                        player.speed()
+                        player2.speed()
+                    else:
+                        Jeu.oui = False
+                        print('Si FALSE le jeu est coupé:', Jeu.oui)
+                        Jeu.p1s.set(Jeu.p1s.get()+1)
+                        canvas.unbind_all('<s>')
+                        canvas.unbind_all('<z>')
+                        canvas.unbind_all('<Down>')
+                        canvas.unbind_all('<Up>')
+                        canvas.delete(ball.ball)
+                        canvas.after_cancel(checkpoint)
+                        master.switch_frame(EndScreen)
+                # J2 Gagne 1pts
+                if coords[2] < 0:
+                    if Jeu.p2s.get() < Menu.scoremax.get() - 1:
+                        Jeu.p2s.set(Jeu.p2s.get()+1)
+                        print("Joueur 2 : ", Jeu.p2s.get())
+                        canvas.move(ball.ball, 500, 0)
+                        ball.x_speed = -ball.x_speed
+                        ball.y_speed = -ball.y_speed
+                        player.resize(0)
+                        player2.resize(0)
+                        player.speed()
+                        player2.speed()
+                    else:
+                        Jeu.oui = False
+                        print('Si FALSE le jeu est coupé:', Jeu.oui)
+                        Jeu.p2s.set(Jeu.p2s.get()+1)
+                        canvas.unbind_all('<s>')
+                        canvas.unbind_all('<z>')
+                        canvas.unbind_all('<Down>')
+                        canvas.unbind_all('<Up>')
+                        canvas.delete(ball.ball)
+                        canvas.after_cancel(checkpoint)
+                        master.switch_frame(EndScreen)
         def bonus():
             global bon
             canvas.after(3000, bonus)
@@ -149,16 +166,22 @@ class Jeu(tk.Frame):
                 bon = None
                 print("Couleur du bonus : ", col, "pour le joueur : ", Jeu.last.get())
                 if col == 'red' and Jeu.last.get() == 1:
-                    player.move_p1 = 60
-                    print(player.move_p1, "P1 Move")
+                    print('P1 Move')
+                    player.speed(60)
                 if col == 'red' and Jeu.last.get() == 2:
-                    player.move_p2 = 60
-                    print(player.move_p2, "P2 Move")
-                    
-
-           
+                    print('P2 Move')
+                    player2.speed(60)
+                if col == 'blue' and Jeu.last.get() == 1:
+                    print('P1 Resize')
+                    player.resize(1.2)
+                if col == 'blue' and Jeu.last.get() == 2:
+                    print('P2 Resize')
+                    player2.resize(1.2)
 
         checkpoint()
+        
+
+        
        
 
 class EndScreen(tk.Frame):

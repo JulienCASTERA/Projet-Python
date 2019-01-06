@@ -4,17 +4,15 @@ class Player:
         canvas_width = int(canvas['width'])
         self.tag = None
         self.move = 20
-        self.move_p1 = 0
-        self.move_p2 = 0
 
         if start <= 0:
             self.x_start = 20
             self.tag = "player"
-            self.move = self.move + self.move_p1
+            self.move = self.move
         else:
             self.tag = "player2"
             self.x_start = canvas_width - 40
-            self.move = self.move + self.move_p2
+            self.move = self.move 
 
         # Init pos
         self.top = self.x_start
@@ -24,7 +22,6 @@ class Player:
         self.player = canvas.create_rectangle(
             self.top, self.left, self.bot, self.right, fill='white', tags=self.tag)
         self.canvas = canvas
-
         self.name = name
 
     # Movement
@@ -45,3 +42,15 @@ class Player:
 
     def speed(self, newSpeed=20):
         self.move = newSpeed
+
+    def resize(self, pourcentage):
+        coords = self.canvas.coords(self.player)
+        self.canvas.delete(self.player)
+        if pourcentage == 0:
+            self.player = self.canvas.create_rectangle(
+                coords[0]+1, coords[1],
+                coords[2], coords[1] + 100, fill="white")
+        else:
+            self.player = self.canvas.create_rectangle(
+                coords[0], coords[1] + (pourcentage * 100),
+                coords[2], coords[3] - (pourcentage * 100), fill="white")
