@@ -29,7 +29,26 @@
     * Un écran de fin de partie
         * Stats basiques : Points par Joueur, gagnant, temps.
         * Rejouer ou Menu
-* **Lot 4 - Evolution:**
+* **Lot 4 - Evolution :**
     * “Bulles” de bonus, comme dans “Curve Fever” ou encore “Sports Head Football”.
         * Activé si la balle touche la bulle
         * Nombre, type, couleur, temps et position des bonus aléatoires
+        * Affecte les joueurs en fonction de la couleur du bonus
+            * Jaune
+                * Affecte les deux joueurs
+                * Vitesse de la Raquette augmentée
+            * Vert
+                * Affecte les deux joueurs
+                * Taille de la raquette augmentée
+            * Rouge
+                * Affecte le joueur qui a touché la balle en dernier
+                * Vitesse de la Raquette augmentée
+            * Bleu
+                * Affecte le joueur qui a touché la balle en dernier
+                * Taille de la raquette augmentée
+            * Violet
+                * Affecte le joueur adversaire de celui qui a touché la balle en dernier
+                * Vitesse de la raquette ralentie
+            * Rose
+                * Affecte le joueur adversaire de celui qui a touché la balle en dernier
+                * Contrôles de la raquette inversés

@@ -7,7 +7,7 @@ class Bonus(object):
         self.canvas = canvas
         self.ball = ball
         self.bon = None
-        col = randint(0, 4)
+        col = randint(0, 5)
         if col == 0:
             self.color = 'red'
         elif col == 1:
@@ -16,6 +16,8 @@ class Bonus(object):
             self.color = 'yellow'
         elif col == 3:
             self.color = 'green'
+        elif col == 4:
+            self.color = 'pink'
         else:
             self.color = 'purple'
 

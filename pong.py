@@ -66,16 +66,15 @@ class Jeu(tk.Frame):
         # INIT Player
         player = Player("Joueur 1", canvas, 20, 100, 0)
         player2 = Player("Joueur 2", canvas, 20, 100, 1)
-
+        Jeu.p1s = tk.IntVar()
+        Jeu.p2s = tk.IntVar()
+        tk.Label(self, textvariable=Jeu.p1s, width=10).grid(column=0, row=0, sticky='w')
+        tk.Label(self, textvariable=Jeu.p2s, width=10).grid(column=2, row=0, sticky='e')
 
         # INIT Messages
         print('###############################################################')
         print("Vitesse définie sur cette partie :", Menu.v.get())
         print("Score défini sur cette partie :", Menu.scoremax.get())
-        Jeu.p1s = tk.IntVar()
-        Jeu.p2s = tk.IntVar()
-        tk.Label(self, textvariable=Jeu.p1s, width=10).grid(column=0, row=0, sticky='w')
-        tk.Label(self, textvariable=Jeu.p2s, width=10).grid(column=2, row=0, sticky='e')
 
         # Movement P1
         canvas.bind_all('<Up>', player.up)
@@ -121,6 +120,14 @@ class Jeu(tk.Frame):
                         player2.resize(0)
                         player.speed()
                         player2.speed()
+                        canvas.unbind_all('<s>')
+                        canvas.unbind_all('<z>')
+                        canvas.bind_all('<z>', player2.up)
+                        canvas.bind_all('<s>', player2.down)
+                        canvas.unbind_all('<Down>')
+                        canvas.unbind_all('<Up>')
+                        canvas.bind_all('<Up>', player.up)
+                        canvas.bind_all('<Down>', player.down)
                     else:
                         Jeu.oui = False
                         print('Game is running:', Jeu.oui)
@@ -144,6 +151,14 @@ class Jeu(tk.Frame):
                         player2.resize(0)
                         player.speed()
                         player2.speed()
+                        canvas.unbind_all('<s>')
+                        canvas.unbind_all('<z>')
+                        canvas.bind_all('<z>', player2.up)
+                        canvas.bind_all('<s>', player2.down)
+                        canvas.unbind_all('<Down>')
+                        canvas.unbind_all('<Up>')
+                        canvas.bind_all('<Up>', player.up)
+                        canvas.bind_all('<Down>', player.down)
                     else:
                         Jeu.oui = False
                         print('Game is running:', Jeu.oui)
@@ -190,6 +205,20 @@ class Jeu(tk.Frame):
                     else:
                         print('Le joueur 1 a un malus de vitesse !')
                         player.speed(10)
+                if col =='pink':
+                    if Jeu.last.get() == 1:
+                        print('Le joueur 2 a les controles inversés !')
+                        canvas.unbind_all('<s>')
+                        canvas.unbind_all('<z>')
+                        canvas.bind_all('<z>', player2.down)
+                        canvas.bind_all('<s>', player2.up)
+                    else:
+                        print('Le joueur 1 a les controles inversés !')
+                        canvas.unbind_all('<Down>')
+                        canvas.unbind_all('<Up>')
+                        canvas.bind_all('<Up>', player.down)
+                        canvas.bind_all('<Down>', player.up)
+                        
 
 
 
